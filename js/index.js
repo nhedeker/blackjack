@@ -33,6 +33,47 @@
         hasAce: false // for unused aces
       };
 
+      var shuffle = function() {
+        var $shuffled = $.getJSON(`http://deckofcardsapi.com/api/deck/${deckID}/shuffle/`);
+
+        $shuffled.done(function(data) {
+          if ($shuffled.status !== 200) {
+            return;
+          }
+          if (data.shuffled !== true){
+            shuffle();
+
+            return;
+          }
+          cardsLeft = data.remaining;
+          console.log(data.shuffled);
+        });
+        $shuffled.fail(function(err) {
+          console.log('Error in shuffle function');
+          console.log(err);
+        });
+      };
+
+      var shuffleCheck = function() {
+        if (cardsLeft <= 60) { shuffle(deckID); }
+      };
+
+      var restartGame = function() {
+        shuffleCheck();
+        player.hand = [];
+        dealer.hand = [];
+        player.hasAce = false;
+        dealer.hasAce = false;
+        player.hasBlackjack = false;
+        dealer.hasBlackjack = false;
+        startGame();
+      };
+
+      var endGame = function(winner) {
+        //for when game ends
+        restartGame();
+      };
+
       var draw = function() {
         var $cardDrawn = $.getJSON(`http://deckofcardsapi.com/api/deck/${deckID}/draw/?count=2`);
 
@@ -77,11 +118,18 @@
         dealer.push(draw()[0]);
       };
 
-      var startGame = function() {
-        deal();
+      var displayGame = function() {
+        //for when first game first starts
+        //and possibly for placing initial bet
       };
 
-      startGame();
+      var displayHands = function() {
+        //for when hands are dealt
+      };
+
+      var displayNewCard = function(person) {
+        //for when a new non-starting card is drawn
+      };
 
       var calculateHand = function(person) {
         var total = 0;
@@ -104,23 +152,6 @@
             return; // just in case 2 aces and only want to alter 1
           }
         }
-      };
-
-      var endGame = function(winner) {
-        //for when game ends
-      };
-
-      var displayNewCard = function(person) {
-        //for when a new non-starting card is drawn
-      };
-
-      var displayGame = function() {
-        //for when first game first starts
-        //and possibly for placing initial bet
-      };
-
-      var displayHands = function() {
-        //for when hands are dealt
       };
 
       var dealerTurn = function() {
@@ -176,7 +207,6 @@
         dealerTurn();
       };
 
-      // add event listners to buttons and everything
       var playerTurn = function() {
         var total = calculateHand(player)
         if (player.hasBlackjack) {
@@ -207,45 +237,17 @@
         }
       };
 
-      var shuffle = function() {
-        var $shuffled = $.getJSON(`http://deckofcardsapi.com/api/deck/${deckID}/shuffle/`);
-
-        $shuffled.done(function(data) {
-          if ($shuffled.status !== 200) {
-            return;
-          }
-          if (data.shuffled !== true){
-            shuffle();
-
-            return;
-          }
-          cardsLeft = data.remaining;
-          console.log(data.shuffled);
-        });
-        $shuffled.fail(function(err) {
-          console.log('Error in shuffle function');
-          console.log(err);
-        });
+      var startGame = function() {
+        displayGame();
+        deal();
+        displayHands();
+        playerTurn();
       };
 
-      var shuffleCheck = function() {
-        if (cardsLeft <= 60) { shuffle(deckID); }
-      };
-
-      var restartGame = function() {
-        shuffleCheck();
-        player.hand = [];
-        dealer.hand = [];
-        player.hasAce = false;
-        dealer.hasAce = false;
-        player.hasBlackjack = false;
-        dealer.hasBlackjack = false;
-        startGame();
-      };
+      startGame();
     });
     $xhr.fail(function(err) {
       console.log(err);
     });
-
   }; // end of renderGame()
 })();
