@@ -1,0 +1,31 @@
+body{
+  background: url("../img/tabletop.jpg");
+  background-size: size;
+  height: auto;
+}
+
+div.valign-wrapper{
+  flex-direction: column;
+  height: 500px;
+  justify-content: center;
+}
+
+img{
+  height: 236px;
+  width: 170px;
+}
+
+/*#board{
+  display: flex;
+  align-content: space-around;
+}
+
+#dealerHand, #playerHand{
+  flex-direction: row;
+  flex-wrap: wrap;
+}*/
+
+.btn-large{
+  text-transform: capitalize;
+  font-size: x-large;
+}
