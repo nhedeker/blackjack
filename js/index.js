@@ -1,8 +1,13 @@
 (function() {
   'use strict';
 
+  $('#start').on('click', function(){
+    renderGame();
+  });
 
   var renderGame = function() {
+    $('.removable').remove();
+
     var $xhr = $.getJSON('http://deckofcardsapi.com/api/deck/new/shuffle/?deck_count=6');
 
     $xhr.done(function(deck) {
@@ -17,9 +22,6 @@
       var deckID = deck.deck_id;
       var cardsLeft = deck.remaining;
 
-      console.log(`Deck ID: ${deckID}`);
-      console.log(`Cards Remaining: ${cardsLeft}`);
-
       var player = {
         hand: [],
         money: 500,
@@ -31,6 +33,31 @@
         hand: [], // playing with first card of dealerHand face down
         hasBlackjack: false,
         hasAce: false // for unused aces
+      };
+
+      $('.navbar-fixed').after('<div id="board" class="center-align"></div');
+      var $board = $('#board');
+
+      var displayGame = function() {
+        var $row1 = $('<div class="row" id="row-1"></div>');
+        $row1.append('<div class="col s2"></div>');
+        $row1.append('<div class="col s8 valign-wrapper" id="dealerHand"></div>');
+        $row1.append('<div class="col s2"></div>');
+
+        var $row3 = $('<div class="row" id="row-3"></div>');
+
+        $row3.append('<div class="col s2 valign-wrapper" id="blackjack-buttons"><button class="btn-large z-depth-1 yellow-text purple darken-2 center-align" id="hit">Hit</button><p></p><button class="btn-large z-depth-1 yellow-text purple darken-2 center-align" id="stand">Stand</button></div>');
+
+        $row3.append('<div class="col s8 valign-wrapper" id="playerHand"></div>');
+
+        $row3.append('<div class="col s2 valign-wrapper" id="state-buttons"><button class="btn-large z-depth-1 yellow-text purple darken-2 center-align" id="play-again">Play Again</button><p></p><button class="btn-large z-depth-1 yellow-text purple darken-2 center-align" id="adj-bet">Adjust Bet</button><p></p><button data-target="modal1" id="rules" class="btn-large modal-trigger yellow-text purple darken-2">Rules</button></div>');
+
+        $board.append($row1);
+        $board.append($row3);
+
+        $board.append('<div id="modal1" class="modal modal-close modal-fixed-footer grey lighten-4"><div class="modal-content grey-text text-darken-4"><h4 class="center-align">Blackjack Rules</h4><p></p><p>A bunch of text</p></div><div class="modal-footer"><a class=" modal-action modal-close waves-effect waves-green btn-flat">Close</a></div></div>');
+
+        $('.modal-trigger').leanModal();
       };
 
       var shuffle = function() {
@@ -75,7 +102,7 @@
       };
 
       var draw = function() {
-        var $cardDrawn = $.getJSON(`http://deckofcardsapi.com/api/deck/${deckID}/draw/?count=2`);
+        var $cardDrawn = $.getJSON(`http://deckofcardsapi.com/api/deck/${deckID}/draw/?count=1`);
 
         $cardDrawn.done(function(data) {
           if ($cardDrawn.status !== 200) {
@@ -86,24 +113,24 @@
 
             return;
           }
-          console.log(data.cards);
           cardsLeft = data.remaining;
           data.cards[0].name = data.cards[0].value;
           var temp = data.cards[0].name;
 
           if (temp === 'KING' || temp === 'QUEEN' || temp === 'JACK') {
             data.cards[0].value = 10;
-
-            return data.cards;
+            // return data.cards[0];
           }
-          if (temp === 'ACE') {
+          else if (temp === 'ACE') {
             data.cards[0].value = 11;
-
-            return data.cards;
+            // return data.cards[0];
           }
-          data.cards[0].value = parseInt(temp);
+          else {
+            data.cards[0].value = parseInt(temp);
+          }
 
-          return data.cards;
+          console.log(data.cards[0]);
+          return data.cards[0];
         });
         $cardDrawn.fail(function(err) {
           console.log('Error in draw function');
@@ -112,29 +139,49 @@
       };
 
       var deal = function() {
-        player.hand.push(draw()[0]);
-        dealer.push(draw()[0]);
-        player.hand.push(draw()[0]);
-        dealer.push(draw()[0]);
-      };
-
-      var displayGame = function() {
-        //for when first game first starts
-        //and possibly for placing initial bet
+        console.log(draw());
+        var temp = draw();
+        console.log(temp);
+        player.hand.push(draw());
+        dealer.hand.push(draw());
+        player.hand.push(draw());
+        dealer.hand.push(draw());
+        console.log(player.hand);
+        console.log(dealer.hand);
+        displayHands();
       };
 
       var displayHands = function() {
-        //for when hands are dealt
+        $('#dealerHand').empty();
+        $('#playerHand').empty();
+
+        for (var card of player.hand){
+          var imageURL = card.image;
+          var $card = $(`<img src=${imageURL}>`);
+          $('#playerHand').append($card);
+        }
+
+        //just placeholder until cardback is avalible
+        var placeholder = dealer.hand[0].image;
+        $('#dealerHand').append(`<img src=${placeholder}>`);
+
+        placeholder = dealer.hand[1].image;
+        $('#dealerHand').append(`<img src=${placeholder}>`);
       };
 
       var displayNewCard = function(person) {
-        //for when a new non-starting card is drawn
+        if (person === dealer){
+
+        }
+        if (person === player){
+
+        }
       };
 
       var calculateHand = function(person) {
         var total = 0;
 
-        for (card of person.hand) {
+        for (var card of person.hand) {
           total += card.value;
           if (card.value === 11) { person.hasAce = true; }
         }
@@ -238,13 +285,13 @@
       };
 
       var startGame = function() {
-        displayGame();
         deal();
-        displayHands();
         playerTurn();
       };
 
+      displayGame();
       startGame();
+
     });
     $xhr.fail(function(err) {
       console.log(err);

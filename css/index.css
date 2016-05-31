@@ -1,31 +1,71 @@
 body{
   background: url("../img/tabletop.jpg");
   background-size: size;
-  height: auto;
+  height: 100%;
+  width: 100%;
+  position: fixed;
 }
 
-div.valign-wrapper{
+.removable{
   flex-direction: column;
-  height: 500px;
   justify-content: center;
+  align-content: center;
+  height: 85%;
 }
 
 img{
-  height: 236px;
-  width: 170px;
+  height: 220px;
+  width: 158px;
 }
 
-/*#board{
-  display: flex;
-  align-content: space-around;
+#row-1, #row-2, #row-3{
+  width: 100%;
 }
 
-#dealerHand, #playerHand{
+#row-1, #row-3{
+  height: 40%;
+  position: absolute;
   flex-direction: row;
-  flex-wrap: wrap;
-}*/
+}
+
+#modal1 p{
+  text-align: left;
+}
+
+#row-1{
+  margin-top: 25px;
+}
+
+#row-3{
+  bottom: 0px;
+}
+
+#row-2{
+  top: 40%;
+  height: 20%;
+  position: absolute;
+}
 
 .btn-large{
   text-transform: capitalize;
   font-size: x-large;
+}
+
+.row{
+  display: flex;
+}
+
+#playerHand, #dealerHand{
+  flex-wrap: nowrap;
+  flex-direction: row;
+  align-items: : center;
+  align-content: space-around;
+  justify-content: center;
+}
+
+#blackjack-buttons, #state-buttons{
+  flex-direction: column;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-content: space-between;
 }
