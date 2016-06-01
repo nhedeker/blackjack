@@ -13,6 +13,15 @@ body{
   height: 85%;
 }
 
+/*.btn-large{
+  background-color: : #601407;
+}*/
+
+.total{
+  color: rgba (144, 178, 71, .1);
+  /*deal with this later*/
+}
+
 img{
   height: 220px;
   width: 158px;
@@ -63,7 +72,7 @@ img{
   justify-content: center;
 }
 
-#blackjack-buttons, #state-buttons{
+#blackjack-buttons, #state-buttons, .total{
   flex-direction: column;
   flex-wrap: wrap;
   justify-content: center;
