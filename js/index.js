@@ -86,6 +86,7 @@
       };
 
       var restartGame = function() {
+        console.log('restarting game');
         shuffleCheck();
         player.hand = [];
         dealer.hand = [];
@@ -98,7 +99,7 @@
 
       var endGame = function(winner) {
         //for when game ends
-        restartGame();
+        //restartGame();
       };
 
       var draw = function() {
@@ -108,47 +109,42 @@
           if ($cardDrawn.status !== 200) {
             return;
           }
-          if (data.success !== true) {
-            draw();
-
-            return;
-          }
+          // if (data.success !== true) {
+          //   draw();
+          //
+          //   return;
+          // }
           cardsLeft = data.remaining;
           data.cards[0].name = data.cards[0].value;
           var temp = data.cards[0].name;
 
           if (temp === 'KING' || temp === 'QUEEN' || temp === 'JACK') {
             data.cards[0].value = 10;
-            // return data.cards[0];
           }
           else if (temp === 'ACE') {
             data.cards[0].value = 11;
-            // return data.cards[0];
           }
           else {
             data.cards[0].value = parseInt(temp);
           }
-
-          console.log(data.cards[0]);
-          return data.cards[0];
         });
+
         $cardDrawn.fail(function(err) {
           console.log('Error in draw function');
           console.log(err);
         });
+        return $cardDrawn;
       };
 
       var deal = function() {
-        console.log(draw());
-        var temp = draw();
-        console.log(temp);
-        player.hand.push(draw());
-        dealer.hand.push(draw());
-        player.hand.push(draw());
-        dealer.hand.push(draw());
-        console.log(player.hand);
-        console.log(dealer.hand);
-        displayHands();
+        var $promise = $.when(draw(), draw(), draw(), draw());
+        $promise.done(function (data1, data2, data3, data4) {
+          player.hand.push(data1[0].cards[0]);
+          dealer.hand.push(data2[0].cards[0]);
+          player.hand.push(data3[0].cards[0]);
+          dealer.hand.push(data4[0].cards[0]);
+          displayHands();
+        });
       };
 
       var displayHands = function() {
@@ -170,23 +166,29 @@
       };
 
       var displayNewCard = function(person) {
+        var imageURL;
+        imageURL = person.hand[person.hand.length-1].image;
+        var $card = $(`<img src=${imageURL}>`);
         if (person === dealer){
-
+          $('#dealerHand').append($card);
         }
         if (person === player){
-
+          $('#playerHand').append($card);
         }
       };
 
       var calculateHand = function(person) {
         var total = 0;
-
+        console.log(person);
+        console.log(person.hand); //returns empty []
+        console.log(person[hand]); //returns hand is not defined
         for (var card of person.hand) {
+          console.log('started counting loop');
           total += card.value;
           if (card.value === 11) { person.hasAce = true; }
         }
         if (total === 21) { person.hasBlackjack = true; }
-
+        console.log('finished counting loop');
         return total;
       };
 
@@ -203,6 +205,7 @@
 
       var dealerTurn = function() {
         var total = calculateHand(dealer);
+        console.log(`dealer total: ${total}`);
 
         if (total === 21) {
           player.hasBlackjack ? endGame('tie') : endGame('dealer');
@@ -256,19 +259,37 @@
 
       var playerTurn = function() {
         var total = calculateHand(player)
+        console.log(`player total: ${total}`);
         if (player.hasBlackjack) {
           console.log("PLAYER HAS BLACKJACK");
           endPlayerTurn();
 
           return;
         }
+        if (total > 21){
+          if (player.hasAce) {
+            changeAce(player);
+            playerTurn();
+
+            return;
+          }
+          else {
+            console.log("PLAYER BUSTED");
+            endPlayerTurn();
+
+            return;
+          }
+        }
         $('#hit').on('click', function(){
           console.log('PLAYER HIT');
-          player.hand.push(draw()[0]);
-          displayNewCard(player);
-          playerTurn();
-
-          return;
+          var $promise2 = $.when(draw());
+          $promise2.done(function (data1) {
+            console.log(data1);
+            player.hand.push(data1.cards[0]);
+            displayNewCard(player);
+            playerTurn();
+            return;
+          });
         });
         $('#stand').on('click', function(){
           console.log('PLAYER STOOD');
@@ -276,12 +297,6 @@
 
           return;
         });
-        if (total > 21){
-          console.log("PLAYER BUSTED");
-          endPlayerTurn();
-
-          return;
-        }
       };
 
       var startGame = function() {
