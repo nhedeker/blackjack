@@ -1,3 +1,23 @@
+#Questions
+
+- What's the name of your project?
+  Natasha Hedeker's Game Hub.
+- What problem does it solve?
+  It entertains users.
+- Who has this problem?
+  Individuals who are bored or just need to quickly pass the time.
+- How does your project solve this problem?
+  It provides entertainment in the form of a game to help pass the time.
+- What web APIs did it use?
+  deckofcardsapi.com
+- What technologies did it use?
+  It utilizes JavaScript, jQuery, Materialize framework, Ajax, HTML, and CSS.
+- What was the most valuable piece of Customer feedback you received?
+  To have some form of indicator as to which hand is the dealer's and which hand is the player's as well as a total score indicator for each hand.
+- What was the biggest challenge you had to overcome?
+  There was a pretty massive bug with the dealer's hand that took a while to hunt down an firmly squish. 
+
+
 # Web Development Q1 Project
 
 The goal of this project is to demonstrate your mastery of the concepts covered over the past quarter. Like your capstone, you're expected to come up with a project idea and implement it all on your own. Unlike a PhD dissertation, you are _not_ expected to discover and publish an idea that's never been done before. Asking your classmates and instructors for help throughout the process is strongly encouraged, but your work must be your own.
@@ -181,4 +201,4 @@ Find the corresponding exercise in the learning management system and submit a l
 ### Update your online portfolio
 
 - Create a portfolio on the [Galvanize student portal](http://students.galvanize.com).
-- Add a link to your project's production environment.
+- Add a link to your project's production environment: nhedeker-game-hub.surge.sh
